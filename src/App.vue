@@ -1,18 +1,18 @@
 <template>
   <v-app class="app-container">
-    <v-container >
+    <v-container class="costum-container">
       <v-text-field
         v-model="search"
         label="Pesquisar"
         placeholder="Bulbasaur"
         solo
-        style="background-color: white;"
+        class="costum-container"
       ></v-text-field>
       <v-select
         v-model="filterBy"
         :items="filterOptions"
         label="Filtrar por"
-        style="background-color: white; margin-bottom:20px;"
+        style="margin-bottom:50px"
       ></v-select>
       <v-row >
         <v-col
@@ -20,7 +20,7 @@
           v-for="pokemon in filtered_pokemons"
           :key="pokemon.name"
         >
-          <v-card>
+          <v-card @click="show_pokemon(get_id(pokemon))">
             <v-container >
               <v-row class="mx-0 d-flex justify-center">
                 <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${get_id(pokemon)}.png`" :alt="pokemon.name" width="80%">
@@ -31,6 +31,35 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <v-dialog v-model="show_dialog" width="800px">
+      <v-card v-if="selected_pokemons">
+        <v-container>
+          <v-row class="d-flex align-center">
+            <v-col cols=4>
+              <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${selected_pokemons.id}.png`" :alt="selected_pokemons.name" width="80%">
+            </v-col>
+            <v-col cols=8>
+              <h1>{{get_name(selected_pokemons)}}</h1>
+              <v-chip 
+              label 
+              v-for="type in selected_pokemons.types" 
+              :key="type.slot"
+              class="mr-2"
+              >{{ type.type.name }}</v-chip>
+              <v-divider class="my-4"></v-divider>
+              <v-chip label >
+                <span>Altura {{selected_pokemons.height * 2.54}} cm</span>
+              </v-chip>
+              <v-chip label class="ml-2">
+                <span>Peso {{(selected_pokemons.weight * 0.45359237).toFixed(0)}}kgs </span>
+              </v-chip>
+            </v-col>
+          </v-row>
+            {{ selected_pokemons }}
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -47,7 +76,8 @@ export default {
       pokemons: [],
       search:"",
       filterBy: "name",
-      filterOptions: ["name", "type", "id", "species"]
+      filterOptions: ["name", "type", "id", "species"],
+      show_dialog: false,
     }
   },
 
@@ -62,6 +92,12 @@ export default {
     },
     get_name(pokemon){
       return pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+    },
+    show_pokemon(id){
+      axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`).then((response) => {
+        this.selected_pokemons =  response.data;
+        this.show_dialog = !this.show_dialog;
+      })
     }
   },
   computed: {
@@ -97,7 +133,7 @@ export default {
 .app-container {
   background: linear-gradient(
       to bottom right,
-      rgb(255, 0, 0),
+      rgb(25, 24, 24),
       rgb(255, 255, 255)
     )
     no-repeat center center fixed !important;
@@ -109,4 +145,9 @@ export default {
   min-height: 100vh;
   color: rgb(0, 0, 0);
 }
+
+.costum-container{
+  background-color:rgb(202, 202, 202);
+}
+
 </style>
