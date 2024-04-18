@@ -1,6 +1,19 @@
 <template>
   <v-app class="app-container">
     <v-container >
+      <v-text-field
+        v-model="search"
+        label="Pesquisar"
+        placeholder="Bulbasaur"
+        solo
+        style="background-color: white;"
+      ></v-text-field>
+      <v-select
+        v-model="filterBy"
+        :items="filterOptions"
+        label="Filtrar por"
+        style="background-color: white; margin-bottom:20px;"
+      ></v-select>
       <v-row >
         <v-col
           cols="2" 
@@ -65,6 +78,7 @@ export default {
           } else if (!isNaN(this.search)) {
             return parseInt(this.get_id(item)) === parseInt(this.search);
           }
+        return false;
           case "species":
             return true; 
           default:
@@ -94,12 +108,5 @@ export default {
   background-position: center;
   min-height: 100vh;
   color: rgb(0, 0, 0);
-}
-
-
-.custom-text-field,
-.custom-select {
-  color: #333; 
-  background-color: #fff; 
 }
 </style>
