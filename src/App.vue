@@ -4,11 +4,6 @@
       <v-row>
         <v-container class="text-center white--text mb-8">
           <img src="https://raw.githubusercontent.com/sleduardo20/pokedex/0671af442dff1d8f7141e49eb83b438885bbc9e9/public/img/logo.svg">
-
-          <h1 style="color:#EF5350 ">
-            Criado por
-            <a>Ricardo Queiroz </a>
-          </h1>
         </v-container>
       </v-row>
       <v-text-field
@@ -43,8 +38,8 @@
     </v-container>
 
     <v-dialog v-model="show_dialog" width="800px">
-      <v-card v-if="selected_pokemons">
-        <v-container class="mx-2">
+      <v-card v-if="selected_pokemons" class="mx-2">
+        <v-container>
           <v-row class="d-flex align-center">
             <v-col cols=4>
               <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${selected_pokemons.id}.png`" :alt="selected_pokemons.name" width="80%">
@@ -69,6 +64,20 @@
           </v-row>
           
           <h2>Moves</h2>
+          <table>
+            <thead>
+              <tr class="table-grid">
+                <th class="text-left">Level</th>
+                <th class="text-left">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-grid" v-for="item in filter_moves(selected_pokemons)" :key="item.move.name">
+                <td>{{get_move_level(item)}}</td>
+                <td>{{ item.move.name }}</td>
+              </tr>
+            </tbody>
+          </table>
         </v-container>
       </v-card>
     </v-dialog>
@@ -95,7 +104,7 @@ export default {
       filterBy: "nome",
       filterOptions: ["nome", "tipo", "id", "especie"],
       show_dialog: false,
-      selected_pokemon:null,
+      selected_pokemons:null,
 
     }
   },
@@ -117,7 +126,25 @@ export default {
         this.selected_pokemons = response.data;
         this.show_dialog = !this.show_dialog;
       });
-    }
+    },
+    get_move_level(move){
+      for(let version of move.version_group_details){
+        if(version.version_group.name == "sword-shield" && version.move_learn_method.name == "level-up"){
+            return version.level_learned_at;
+        }
+      }
+    },
+    filter_moves(pokemon){
+      return pokemon.moves.filter((item)=> {
+        let include = false;
+        for(let version of item.version_group_details){
+          if(version.version_group.name == "sword-shield" && version.move_learn_method.name == "level-up"){
+            include = true;
+          }
+        };
+        return include;
+      })
+    },
   },
   computed: {
     filtered_pokemons() {
@@ -169,5 +196,9 @@ export default {
   background-color:rgb(255, 255, 255);
 }
 
+.table-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
 
 </style>
