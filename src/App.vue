@@ -1,6 +1,16 @@
 <template>
   <v-app class="app-container">
     <v-container class="costum-container">
+      <v-row>
+        <v-container class="text-center white--text mb-8">
+          <img src="https://raw.githubusercontent.com/sleduardo20/pokedex/0671af442dff1d8f7141e49eb83b438885bbc9e9/public/img/logo.svg">
+
+          <h1 style="color:#EF5350 ">
+            Criado por
+            <a>Ricardo Queiroz </a>
+          </h1>
+        </v-container>
+      </v-row>
       <v-text-field
         v-model="search"
         label="Pesquisar"
@@ -34,7 +44,7 @@
 
     <v-dialog v-model="show_dialog" width="800px">
       <v-card v-if="selected_pokemons">
-        <v-container>
+        <v-container class="mx-2">
           <v-row class="d-flex align-center">
             <v-col cols=4>
               <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${selected_pokemons.id}.png`" :alt="selected_pokemons.name" width="80%">
@@ -42,6 +52,7 @@
             <v-col cols=8>
               <h1>{{get_name(selected_pokemons)}}</h1>
               <v-chip 
+              color="green"
               label 
               v-for="type in selected_pokemons.types" 
               :key="type.slot"
@@ -56,7 +67,8 @@
               </v-chip>
             </v-col>
           </v-row>
-            {{ selected_pokemons }}
+          
+          <h2>Moves</h2>
         </v-container>
       </v-card>
     </v-dialog>
@@ -66,18 +78,25 @@
 <script>
 
 import axios from 'axios';
+import PokemonCard from '/Users/ricardo/Pokedex/vue-pokedex/src/components/PokemonCard.vue';
+
+
 export default {
   name: "App",
 
-  components: {},
+  components: {
+    PokemonCard,
+  },
 
   data(){
     return {
       pokemons: [],
       search:"",
-      filterBy: "name",
-      filterOptions: ["name", "type", "id", "species"],
+      filterBy: "nome",
+      filterOptions: ["nome", "tipo", "id", "especie"],
       show_dialog: false,
+      selected_pokemon:null,
+
     }
   },
 
@@ -93,21 +112,21 @@ export default {
     get_name(pokemon){
       return pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
     },
-    show_pokemon(id){
+    show_pokemon(id) {
       axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`).then((response) => {
-        this.selected_pokemons =  response.data;
+        this.selected_pokemons = response.data;
         this.show_dialog = !this.show_dialog;
-      })
+      });
     }
   },
   computed: {
     filtered_pokemons() {
       return this.pokemons.filter((item) => {
         switch (this.filterBy) {
-          case "name":
+          case "nome":
             return item.name.includes(this.search);
           case "type":
-            return true; 
+            return true
           case "id":
           if (this.search === "") {
             return true; 
@@ -133,8 +152,8 @@ export default {
 .app-container {
   background: linear-gradient(
       to bottom right,
-      rgb(25, 24, 24),
-      rgb(255, 255, 255)
+      rgb(30, 84, 165),
+      rgb(199, 199, 199)
     )
     no-repeat center center fixed !important;
   -webkit-background-size: cover;
@@ -147,7 +166,8 @@ export default {
 }
 
 .costum-container{
-  background-color:rgb(202, 202, 202);
+  background-color:rgb(255, 255, 255);
 }
+
 
 </style>
