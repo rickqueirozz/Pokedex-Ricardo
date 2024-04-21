@@ -79,6 +79,10 @@
             </tbody>
           </table>
         </v-container>
+
+        <h2>Evolution</h2>
+
+        <EvolutionChain :pokemon="selected_pokemons"/>
       </v-card>
     </v-dialog>
   </v-app>
@@ -88,6 +92,7 @@
 
 import axios from 'axios';
 import PokemonCard from '/Users/ricardo/Pokedex/vue-pokedex/src/components/PokemonCard.vue';
+import EvolutionChain from '/Users/ricardo/Pokedex/vue-pokedex/src/components/EvolutionChain.vue';
 
 
 export default {
@@ -95,6 +100,7 @@ export default {
 
   components: {
     PokemonCard,
+    EvolutionChain,
   },
 
   data(){
@@ -105,7 +111,6 @@ export default {
       filterOptions: ["nome", "tipo", "id", "especie"],
       show_dialog: false,
       selected_pokemons:null,
-
     }
   },
 
