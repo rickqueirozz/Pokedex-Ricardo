@@ -109,22 +109,39 @@ export default {
       search:"",
       filterBy: "nome",
       filterOptions: ["nome", "tipo", "id", "especie"],
+      selectedType: "",
       show_dialog: false,
       selected_pokemons:null,
+      pokemon_types:[],
+      typeName:"",
     }
   },
 
   mounted(){
     axios.get("https://pokeapi.co/api/v2/pokemon?limit=151").then((response) => {
       this.pokemons = response.data.results;
+      const pokemon = response.data.results;
+      
     })
+
   },
   methods: {
     get_id(pokemon){
       return pokemon.url.split("/")[6];
     },
     get_name(pokemon){
-      return pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+      return pokemon.name.charAt(0) + pokemon.name.slice(1);
+    },
+    get_type(pokemon){
+      const typeIndex = this.get_name(pokemon);
+        axios.get(`https://pokeapi.co/api/v2/pokemon/${typeIndex}`)
+          .then((response) => {
+            this.typeName = response.data.types.length > 0 ? response.data.types[0].type.name : 'Tipo não encontrado';
+            return this.typeName
+          })
+          .catch((error) => {
+            console.error("Erro ao obter tipo:", error);
+          });
     },
     show_pokemon(id) {
       axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`).then((response) => {
@@ -157,8 +174,8 @@ export default {
         switch (this.filterBy) {
           case "nome":
             return item.name.includes(this.search);
-          case "type":
-            return true
+          case "tipo":
+            this.typeName.includes(this.search);
           case "id":
           if (this.search === "") {
             return true; 
